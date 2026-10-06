@@ -1,725 +1,900 @@
 /* =========================================================
-   LAUNDRY — PHOTO FEATURE
-   Built on your original working V2 files
+   LAUNDRY — COMPLETE SCRIPT
+   Items + Photos + Receipt + Download
 ========================================================= */
 
-const items = [
-  {id:"shirts",name:"Shirts"},
-  {id:"pants",name:"Pants"},
-  {id:"tshirts",name:"T-Shirts"},
-  {id:"shorts",name:"Shorts"},
-  {id:"trackpants",name:"Track Pants"},
-  {id:"bedsheets",name:"Bedsheets"},
-  {id:"towels",name:"Towels"},
-  {id:"pillowcovers",name:"Pillow Covers"},
-  {id:"underwear",name:"Underwear"},
-  {id:"innertopwear",name:"Inner Top Wear"}
-];
+document.addEventListener("DOMContentLoaded", () => {
 
-const q = Object.fromEntries(
-  items.map(x => [x.id, 0])
-);
+  /* =======================================================
+     ITEMS
+  ======================================================= */
 
-const $ = x => document.getElementById(x);
+  const items = [
+    "Shirts",
+    "T-shirts",
+    "Track pants",
+    "Towels",
+    "Underwear",
+    "Pants",
+    "Shorts",
+    "Bedsheets",
+    "Pillow covers",
+    "Inner Top Wear"
+  ];
 
-let selectedPhotos = [];
+  const quantities = {};
 
-
-/* =========================================================
-   CREATE ITEM LIST
-========================================================= */
-
-function render() {
-
-  $("itemsGrid").innerHTML = items.map(x => `
-    <div class="item" id="card-${x.id}">
-
-      <span class="item-name">
-        ${x.name}
-      </span>
-
-      <div class="controls">
-
-        <button
-          class="qty"
-          data-id="${x.id}"
-          data-change="-1"
-          type="button"
-        >−</button>
-
-        <span
-          class="num"
-          id="num-${x.id}"
-        >0</span>
-
-        <button
-          class="qty"
-          data-id="${x.id}"
-          data-change="1"
-          type="button"
-        >+</button>
-
-      </div>
-
-    </div>
-  `).join("");
-
-}
+  items.forEach(item => {
+    quantities[item] = 0;
+  });
 
 
-/* =========================================================
-   TOTAL
-========================================================= */
+  /* =======================================================
+     ELEMENTS
+  ======================================================= */
 
-function total() {
+  const itemsGrid = document.getElementById("itemsGrid");
+  const liveTotal = document.getElementById("liveTotal");
 
-  return Object.values(q).reduce(
-    (a,b) => a + b,
-    0
-  );
+  const formScreen = document.getElementById("formScreen");
+  const receiptScreen = document.getElementById("receiptScreen");
 
-}
+  const submitBtn = document.getElementById("submitBtn");
+  const newBtn = document.getElementById("newBtn");
+  const downloadBtn = document.getElementById("downloadBtn");
 
+  const errorBox = document.getElementById("error");
+  const downloadMsg = document.getElementById("downloadMsg");
 
-/* =========================================================
-   QUANTITY BUTTONS
-========================================================= */
+  const receiptItems = document.getElementById("receiptItems");
+  const receiptNumber = document.getElementById("receiptNumber");
+  const receiptDate = document.getElementById("receiptDate");
+  const receiptTime = document.getElementById("receiptTime");
+  const totalItems = document.getElementById("totalItems");
 
-$("itemsGrid").addEventListener("click", e => {
+  const photoSection = document.getElementById("photoSection");
 
-  const b = e.target.closest(".qty");
+  const cameraBtn = document.getElementById("cameraBtn");
+  const galleryBtn = document.getElementById("galleryBtn");
 
-  if (!b) return;
+  const cameraInput = document.getElementById("cameraInput");
+  const galleryInput = document.getElementById("galleryInput");
 
-  const id = b.dataset.id;
+  const photoPreview = document.getElementById("photoPreview");
+  const photoCount = document.getElementById("photoCount");
 
-  const n = Math.max(
-    0,
-    Math.min(
-      99,
-      q[id] + Number(b.dataset.change)
-    )
-  );
-
-  if (n === q[id]) return;
-
-  q[id] = n;
-
-  $("num-" + id).textContent = n;
-
-  $("liveTotal").textContent = total();
-
-  const c = $("card-" + id);
-
-  c.classList.remove("bump");
-
-  void c.offsetWidth;
-
-  c.classList.add("bump");
-
-});
+  const receiptPhotos = document.getElementById("receiptPhotos");
+  const receiptPhotoGrid = document.getElementById("receiptPhotoGrid");
 
 
-/* =========================================================
-   RECEIPT NUMBER
-========================================================= */
+  /* =======================================================
+     PHOTOS
+  ======================================================= */
 
-function rid() {
-
-  const d = new Date();
-
-  const s =
-    `${d.getFullYear()}` +
-    `${String(d.getMonth()+1).padStart(2,"0")}` +
-    `${String(d.getDate()).padStart(2,"0")}`;
-
-  return `LD-${s}-${Math.floor(1000 + Math.random() * 9000)}`;
-
-}
-
-
-/* =========================================================
-   PHOTO UPLOAD UI
-========================================================= */
-
-function createPhotoSection() {
-
-  const section = document.createElement("section");
-
-  section.id = "photoSection";
-
-  section.innerHTML = `
-
-    <div class="photo-box">
-
-      <div class="photo-heading">
-        <div>
-          <small>OPTIONAL</small>
-          <h2>📸 Clothes Photos</h2>
-        </div>
-
-        <span id="photoCount">
-          0 photos
-        </span>
-      </div>
-
-      <p class="photo-description">
-        Add photos of the clothes you're giving to laundry.
-        They'll be saved on your receipt.
-      </p>
-
-      <div class="photo-buttons">
-
-        <button
-          type="button"
-          id="cameraBtn"
-          class="photo-button"
-        >
-          📷 Take Photo
-        </button>
-
-        <button
-          type="button"
-          id="galleryBtn"
-          class="photo-button"
-        >
-          🖼️ Gallery
-        </button>
-
-      </div>
-
-      <input
-        type="file"
-        id="cameraInput"
-        accept="image/*"
-        capture="environment"
-        multiple
-        hidden
-      >
-
-      <input
-        type="file"
-        id="galleryInput"
-        accept="image/*"
-        multiple
-        hidden
-      >
-
-      <div
-        id="photoPreview"
-        class="photo-preview"
-      ></div>
-
-    </div>
-
-  `;
-
+  let selectedPhotos = [];
 
   /*
-    Put photo section between item card
-    and submit button.
+    Maximum number of photos.
+    Keeping this limited prevents the phone from
+    running out of memory.
   */
 
-  const submitButton = $("submitBtn");
+  const MAX_PHOTOS = 6;
 
-  submitButton.parentNode.insertBefore(
-    section,
-    submitButton
-  );
+  /*
+    Images are resized to this maximum dimension.
+  */
 
+  const MAX_IMAGE_SIZE = 1280;
 
-  $("cameraBtn").onclick = () => {
-    $("cameraInput").click();
-  };
+  /*
+    JPEG quality.
+    Smaller = less memory.
+  */
 
-
-  $("galleryBtn").onclick = () => {
-    $("galleryInput").click();
-  };
+  const IMAGE_QUALITY = 0.72;
 
 
-  $("cameraInput").addEventListener(
-    "change",
-    handlePhotos
-  );
+  /* =======================================================
+     RENDER ITEMS
+  ======================================================= */
+
+  function renderItems() {
+
+    itemsGrid.innerHTML = "";
+
+    items.forEach((item, index) => {
+
+      const card = document.createElement("div");
+
+      card.className = "item";
+
+      card.innerHTML = `
+        <span class="item-name">
+          ${item}
+        </span>
+
+        <div class="controls">
+
+          <button
+            class="qty minus"
+            type="button"
+            aria-label="Decrease ${item}"
+          >
+            −
+          </button>
+
+          <span class="num">
+            0
+          </span>
+
+          <button
+            class="qty plus"
+            type="button"
+            aria-label="Increase ${item}"
+          >
+            +
+          </button>
+
+        </div>
+      `;
 
 
-  $("galleryInput").addEventListener(
-    "change",
-    handlePhotos
-  );
-
-}
+      const number = card.querySelector(".num");
+      const minus = card.querySelector(".minus");
+      const plus = card.querySelector(".plus");
 
 
-/* =========================================================
-   HANDLE PHOTOS
-========================================================= */
+      plus.addEventListener("click", () => {
 
-function handlePhotos(event) {
+        quantities[item]++;
 
-  const files = Array.from(
-    event.target.files || []
-  );
+        number.textContent = quantities[item];
 
-  files.forEach(file => {
+        updateTotal();
 
-    if (!file.type.startsWith("image/")) {
-      return;
-    }
+        card.classList.remove("bump");
 
-    /*
-      Maximum 8MB per photo.
-    */
+        void card.offsetWidth;
 
-    if (file.size > 8 * 1024 * 1024) {
-
-      alert(
-        `${file.name} is bigger than 8MB. Please choose a smaller photo.`
-      );
-
-      return;
-
-    }
-
-
-    const reader = new FileReader();
-
-
-    reader.onload = e => {
-
-      selectedPhotos.push({
-        src: e.target.result
+        card.classList.add("bump");
       });
 
-      renderPhotos();
 
-    };
+      minus.addEventListener("click", () => {
 
+        if (quantities[item] <= 0) return;
 
-    reader.readAsDataURL(file);
+        quantities[item]--;
 
-  });
+        number.textContent = quantities[item];
 
+        updateTotal();
 
-  /*
-    Allows selecting the same image again.
-  */
+        card.classList.remove("bump");
 
-  event.target.value = "";
+        void card.offsetWidth;
 
-}
+        card.classList.add("bump");
+      });
 
 
-/* =========================================================
-   PHOTO PREVIEW
-========================================================= */
+      itemsGrid.appendChild(card);
 
-function renderPhotos() {
-
-  const preview = $("photoPreview");
-
-  if (!preview) return;
-
-  preview.innerHTML = "";
-
-
-  selectedPhotos.forEach((photo,index) => {
-
-    const wrapper =
-      document.createElement("div");
-
-    wrapper.className = "photo-preview-item";
-
-
-    const img =
-      document.createElement("img");
-
-    img.src = photo.src;
-
-    img.alt = "Clothes photo";
-
-
-    const remove =
-      document.createElement("button");
-
-    remove.type = "button";
-
-    remove.className = "remove-photo";
-
-    remove.textContent = "×";
-
-
-    remove.onclick = () => {
-
-      selectedPhotos.splice(index,1);
-
-      renderPhotos();
-
-    };
-
-
-    wrapper.appendChild(img);
-
-    wrapper.appendChild(remove);
-
-    preview.appendChild(wrapper);
-
-  });
-
-
-  $("photoCount").textContent =
-    `${selectedPhotos.length} ${
-      selectedPhotos.length === 1
-        ? "photo"
-        : "photos"
-    }`;
-
-}
-
-
-/* =========================================================
-   ADD PHOTOS TO RECEIPT
-========================================================= */
-
-function addPhotosToReceipt() {
-
-  const old =
-    $("receiptPhotos");
-
-  if (old) {
-    old.remove();
-  }
-
-
-  if (selectedPhotos.length === 0) {
-    return;
-  }
-
-
-  const section =
-    document.createElement("div");
-
-  section.id = "receiptPhotos";
-
-  section.innerHTML = `
-
-    <div class="receipt-photo-title">
-      CLOTHES PHOTOS
-    </div>
-
-    <div
-      id="receiptPhotoGrid"
-      class="receipt-photo-grid"
-    ></div>
-
-  `;
-
-
-  const receipt =
-    $("receiptCapture");
-
-
-  receipt.insertBefore(
-    section,
-    receipt.querySelector("footer")
-  );
-
-
-  const grid =
-    $("receiptPhotoGrid");
-
-
-  selectedPhotos.forEach(photo => {
-
-    const img =
-      document.createElement("img");
-
-    img.src = photo.src;
-
-    img.alt = "Laundry clothes";
-
-    grid.appendChild(img);
-
-  });
-
-}
-
-
-/* =========================================================
-   SUBMIT
-========================================================= */
-
-$("submitBtn").onclick = () => {
-
-  if (!total()) {
-
-    $("error").textContent =
-      "Please select at least one item first.";
-
-    return;
+    });
 
   }
 
 
-  $("error").textContent = "";
+  /* =======================================================
+     TOTAL
+  ======================================================= */
+
+  function updateTotal() {
+
+    let total = 0;
+
+    items.forEach(item => {
+      total += quantities[item];
+    });
+
+    liveTotal.textContent = total;
+
+    return total;
+  }
 
 
-  const d = new Date();
+  /* =======================================================
+     PHOTO BUTTONS
+  ======================================================= */
 
+  cameraBtn.addEventListener("click", () => {
 
-  $("receiptNumber").textContent =
-    rid();
+    /*
+      Camera input intentionally does NOT use multiple.
+      Android cameras are more reliable this way.
+    */
 
-
-  $("receiptDate").textContent =
-    d.toLocaleDateString(
-      "en-IN",
-      {
-        day:"2-digit",
-        month:"short",
-        year:"numeric"
-      }
-    );
-
-
-  $("receiptTime").textContent =
-    d.toLocaleTimeString(
-      "en-IN",
-      {
-        hour:"2-digit",
-        minute:"2-digit",
-        hour12:true
-      }
-    );
-
-
-  $("totalItems").textContent =
-    total();
-
-
-  $("receiptItems").innerHTML =
-    items
-      .filter(x => q[x.id] > 0)
-      .map(x => `
-        <div class="row">
-          <span>${x.name}</span>
-          <span>${q[x.id]}</span>
-        </div>
-      `)
-      .join("");
-
-
-  /*
-    NEW:
-    Add photos to receipt.
-  */
-
-  addPhotosToReceipt();
-
-
-  $("downloadMsg").textContent = "";
-
-
-  $("formScreen").classList.remove("active");
-
-  $("receiptScreen").classList.add("active");
-
-
-  scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-
-};
-
-
-/* =========================================================
-   HTML2CANVAS
-========================================================= */
-
-function loadCanvas() {
-
-  return new Promise((ok,no) => {
-
-    const s =
-      document.createElement("script");
-
-    s.src =
-      "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-
-    s.onload = ok;
-
-    s.onerror = no;
-
-    document.head.appendChild(s);
+    cameraInput.click();
 
   });
 
-}
+
+  galleryBtn.addEventListener("click", () => {
+
+    galleryInput.click();
+
+  });
 
 
-/* =========================================================
-   DOWNLOAD RECEIPT
-========================================================= */
+  cameraInput.addEventListener("change", event => {
 
-$("downloadBtn").onclick = async () => {
+    handleFiles(event.target.files);
 
-  $("downloadMsg").textContent =
-    "Preparing your receipt…";
+    /*
+      Reset input so the same photo can be selected again.
+    */
 
-  $("downloadBtn").disabled = true;
+    cameraInput.value = "";
+
+  });
 
 
-  try {
+  galleryInput.addEventListener("change", event => {
 
-    if (
-      typeof html2canvas === "undefined"
-    ) {
+    handleFiles(event.target.files);
 
-      await loadCanvas();
+    galleryInput.value = "";
 
+  });
+
+
+  /* =======================================================
+     HANDLE PHOTOS
+  ======================================================= */
+
+  async function handleFiles(fileList) {
+
+    if (!fileList || fileList.length === 0) {
+      return;
     }
 
 
-    /*
-      Give the receipt images a moment
-      to render before screenshotting.
-    */
+    if (selectedPhotos.length >= MAX_PHOTOS) {
 
-    await new Promise(
-      resolve => setTimeout(resolve,300)
-    );
+      alert(`You can add up to ${MAX_PHOTOS} photos.`);
+
+      return;
+    }
 
 
-    const canvas =
-      await html2canvas(
-        $("receiptCapture"),
+    const files = Array.from(fileList);
+
+    const remaining = MAX_PHOTOS - selectedPhotos.length;
+
+    const filesToProcess = files.slice(0, remaining);
+
+
+    try {
+
+      for (const file of filesToProcess) {
+
+        if (!file.type.startsWith("image/")) {
+          continue;
+        }
+
+        const compressed = await compressImage(file);
+
+        selectedPhotos.push(compressed);
+
+      }
+
+
+      renderPhotoPreview();
+
+    } catch (error) {
+
+      console.error("Photo processing error:", error);
+
+      alert(
+        "The photo could not be processed. Please try a smaller photo."
+      );
+
+    }
+
+  }
+
+
+  /* =======================================================
+     COMPRESS IMAGE
+  ======================================================= */
+
+  function compressImage(file) {
+
+    return new Promise((resolve, reject) => {
+
+      const reader = new FileReader();
+
+
+      reader.onload = event => {
+
+        const img = new Image();
+
+
+        img.onload = () => {
+
+          let width = img.width;
+          let height = img.height;
+
+
+          /*
+            Resize large camera photos.
+          */
+
+          if (width > MAX_IMAGE_SIZE || height > MAX_IMAGE_SIZE) {
+
+            if (width > height) {
+
+              height =
+                Math.round(
+                  height * (MAX_IMAGE_SIZE / width)
+                );
+
+              width = MAX_IMAGE_SIZE;
+
+            } else {
+
+              width =
+                Math.round(
+                  width * (MAX_IMAGE_SIZE / height)
+                );
+
+              height = MAX_IMAGE_SIZE;
+
+            }
+
+          }
+
+
+          const canvas = document.createElement("canvas");
+
+          canvas.width = width;
+          canvas.height = height;
+
+
+          const ctx = canvas.getContext("2d");
+
+          if (!ctx) {
+            reject(new Error("Canvas unavailable"));
+            return;
+          }
+
+
+          ctx.drawImage(
+            img,
+            0,
+            0,
+            width,
+            height
+          );
+
+
+          /*
+            Convert to compressed JPEG.
+          */
+
+          const dataUrl = canvas.toDataURL(
+            "image/jpeg",
+            IMAGE_QUALITY
+          );
+
+
+          resolve(dataUrl);
+
+        };
+
+
+        img.onerror = () => {
+
+          reject(
+            new Error("Could not load image")
+          );
+
+        };
+
+
+        img.src = event.target.result;
+
+      };
+
+
+      reader.onerror = () => {
+
+        reject(
+          new Error("Could not read image")
+        );
+
+      };
+
+
+      reader.readAsDataURL(file);
+
+    });
+
+  }
+
+
+  /* =======================================================
+     PHOTO PREVIEW
+  ======================================================= */
+
+  function renderPhotoPreview() {
+
+    photoPreview.innerHTML = "";
+
+    photoCount.textContent =
+      `${selectedPhotos.length} photo${selectedPhotos.length === 1 ? "" : "s"}`;
+
+
+    selectedPhotos.forEach((photo, index) => {
+
+      const box = document.createElement("div");
+
+      box.className = "photo-preview-item";
+
+
+      const image = document.createElement("img");
+
+      image.src = photo;
+
+      image.alt = `Laundry photo ${index + 1}`;
+
+      image.loading = "lazy";
+
+
+      const remove = document.createElement("button");
+
+      remove.className = "remove-photo";
+
+      remove.type = "button";
+
+      remove.textContent = "×";
+
+      remove.setAttribute(
+        "aria-label",
+        "Remove photo"
+      );
+
+
+      remove.addEventListener("click", () => {
+
+        selectedPhotos.splice(index, 1);
+
+        renderPhotoPreview();
+
+      });
+
+
+      box.appendChild(image);
+
+      box.appendChild(remove);
+
+      photoPreview.appendChild(box);
+
+    });
+
+  }
+
+
+  /* =======================================================
+     SUBMIT
+  ======================================================= */
+
+  submitBtn.addEventListener("click", () => {
+
+    errorBox.textContent = "";
+
+    const total = updateTotal();
+
+
+    if (total === 0) {
+
+      errorBox.textContent =
+        "Please select at least one laundry item.";
+
+      return;
+    }
+
+
+    submitBtn.disabled = true;
+
+    submitBtn.querySelector("span").textContent =
+      "Preparing Receipt...";
+
+
+    setTimeout(() => {
+
+      createReceipt(total);
+
+      formScreen.classList.remove("active");
+
+      receiptScreen.classList.add("active");
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+
+      submitBtn.disabled = false;
+
+      submitBtn.querySelector("span").textContent =
+        "Submit Laundry";
+
+    }, 350);
+
+  });
+
+
+  /* =======================================================
+     CREATE RECEIPT
+  ======================================================= */
+
+  function createReceipt(total) {
+
+    const now = new Date();
+
+
+    const year = now.getFullYear();
+
+    const month = String(
+      now.getMonth() + 1
+    ).padStart(2, "0");
+
+    const day = String(
+      now.getDate()
+    ).padStart(2, "0");
+
+
+    const receiptId =
+      `LD-${year}${month}${day}-${Math.floor(
+        1000 + Math.random() * 9000
+      )}`;
+
+
+    const dateText =
+      now.toLocaleDateString(
+        undefined,
         {
-          backgroundColor:"#fff",
-          scale:3,
-          useCORS:true,
-          logging:false
+          day: "2-digit",
+          month: "short",
+          year: "numeric"
         }
       );
 
 
-    canvas.toBlob(blob => {
-
-      if (!blob) {
-        throw new Error();
-      }
-
-
-      const url =
-        URL.createObjectURL(blob);
-
-
-      const a =
-        document.createElement("a");
-
-
-      a.href = url;
-
-
-      a.download =
-        `Laundry-Receipt-${$("receiptNumber").textContent}.png`;
-
-
-      document.body.appendChild(a);
-
-      a.click();
-
-      a.remove();
-
-
-      setTimeout(
-        () => URL.revokeObjectURL(url),
-        1000
+    const timeText =
+      now.toLocaleTimeString(
+        undefined,
+        {
+          hour: "2-digit",
+          minute: "2-digit"
+        }
       );
 
 
-      $("downloadMsg").textContent =
-        "Receipt downloaded ✓";
+    receiptNumber.textContent = receiptId;
 
-      $("downloadBtn").disabled = false;
+    receiptDate.textContent = dateText;
 
-    },"image/png");
+    receiptTime.textContent = timeText;
+
+    totalItems.textContent = total;
 
 
-  } catch(e) {
+    receiptItems.innerHTML = "";
 
-    console.error(e);
 
-    $("downloadMsg").textContent =
-      "Download failed. Please try again.";
+    items.forEach(item => {
 
-    $("downloadBtn").disabled = false;
+      if (quantities[item] <= 0) {
+        return;
+      }
+
+
+      const row = document.createElement("div");
+
+      row.className = "row";
+
+
+      row.innerHTML = `
+        <span>${item}</span>
+        <span>${quantities[item]}</span>
+      `;
+
+
+      receiptItems.appendChild(row);
+
+    });
+
+
+    createReceiptPhotos();
 
   }
 
-};
+
+  /* =======================================================
+     RECEIPT PHOTOS
+  ======================================================= */
+
+  function createReceiptPhotos() {
+
+    receiptPhotoGrid.innerHTML = "";
 
 
-/* =========================================================
-   NEW SUBMISSION
-========================================================= */
+    if (selectedPhotos.length === 0) {
 
-$("newBtn").onclick = () => {
+      receiptPhotos.classList.remove(
+        "has-photos"
+      );
 
-  items.forEach(x => {
+      return;
+    }
 
-    q[x.id] = 0;
 
-    $("num-" + x.id).textContent = "0";
+    receiptPhotos.classList.add(
+      "has-photos"
+    );
+
+
+    selectedPhotos.forEach((photo, index) => {
+
+      const image = document.createElement("img");
+
+      image.src = photo;
+
+      image.alt =
+        `Laundry receipt photo ${index + 1}`;
+
+      receiptPhotoGrid.appendChild(image);
+
+    });
+
+  }
+
+
+  /* =======================================================
+     LOAD HTML2CANVAS
+  ======================================================= */
+
+  function loadHtml2Canvas() {
+
+    return new Promise((resolve, reject) => {
+
+      if (window.html2canvas) {
+
+        resolve(window.html2canvas);
+
+        return;
+      }
+
+
+      const script =
+        document.createElement("script");
+
+
+      script.src =
+        "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+
+
+      script.onload = () => {
+
+        resolve(window.html2canvas);
+
+      };
+
+
+      script.onerror = () => {
+
+        reject(
+          new Error(
+            "Could not load receipt download library."
+          )
+        );
+
+      };
+
+
+      document.head.appendChild(script);
+
+    });
+
+  }
+
+
+  /* =======================================================
+     DOWNLOAD RECEIPT
+  ======================================================= */
+
+  downloadBtn.addEventListener("click", async () => {
+
+    downloadMsg.textContent =
+      "Preparing your receipt...";
+
+
+    downloadBtn.disabled = true;
+
+
+    try {
+
+      const html2canvas =
+        await loadHtml2Canvas();
+
+
+      const receipt =
+        document.getElementById(
+          "receiptCapture"
+        );
+
+
+      /*
+        Lower scale = much less memory usage.
+        2 is still sharp on phones.
+      */
+
+      const canvas =
+        await html2canvas(
+          receipt,
+          {
+            scale: 2,
+
+            backgroundColor: "#ffffff",
+
+            useCORS: true,
+
+            logging: false
+          }
+        );
+
+
+      canvas.toBlob(
+        blob => {
+
+          if (!blob) {
+
+            downloadMsg.textContent =
+              "Could not create the receipt image.";
+
+            downloadBtn.disabled = false;
+
+            return;
+          }
+
+
+          const url =
+            URL.createObjectURL(blob);
+
+
+          const link =
+            document.createElement("a");
+
+
+          link.href = url;
+
+
+          const number =
+            receiptNumber.textContent
+              .replace(/[^a-zA-Z0-9-]/g, "");
+
+
+          link.download =
+            `Laundry-Receipt-${number}.png`;
+
+
+          document.body.appendChild(link);
+
+          link.click();
+
+          link.remove();
+
+
+          setTimeout(() => {
+
+            URL.revokeObjectURL(url);
+
+          }, 1000);
+
+
+          downloadMsg.textContent =
+            "✓ Receipt saved successfully!";
+
+          downloadBtn.disabled = false;
+
+        },
+
+        "image/png"
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Receipt download error:",
+        error
+      );
+
+
+      downloadMsg.textContent =
+        "Could not download receipt. Please try again.";
+
+
+      downloadBtn.disabled = false;
+
+    }
 
   });
 
 
-  $("liveTotal").textContent = "0";
+  /* =======================================================
+     NEW SUBMISSION
+  ======================================================= */
 
-  $("error").textContent = "";
+  newBtn.addEventListener("click", () => {
 
-  $("downloadMsg").textContent = "";
+    items.forEach(item => {
 
+      quantities[item] = 0;
 
-  /*
-    Clear photos.
-  */
-
-  selectedPhotos = [];
-
-  renderPhotos();
+    });
 
 
-  const receiptPhotos =
-    $("receiptPhotos");
-
-  if (receiptPhotos) {
-    receiptPhotos.remove();
-  }
+    selectedPhotos = [];
 
 
-  $("receiptScreen")
-    .classList.remove("active");
+    receiptPhotoGrid.innerHTML = "";
+
+    receiptPhotos.classList.remove(
+      "has-photos"
+    );
 
 
-  $("formScreen")
-    .classList.add("active");
+    renderItems();
+
+    updateTotal();
+
+    renderPhotoPreview();
 
 
-  scrollTo({
-    top:0,
-    behavior:"smooth"
+    errorBox.textContent = "";
+
+    downloadMsg.textContent = "";
+
+
+    receiptScreen.classList.remove(
+      "active"
+    );
+
+    formScreen.classList.add(
+      "active"
+    );
+
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
   });
 
-};
 
+  /* =======================================================
+     START
+  ======================================================= */
 
-/* =========================================================
-   START
-========================================================= */
+  renderItems();
 
-render();
+  updateTotal();
 
-createPhotoSection();
+  renderPhotoPreview();
+
+});
