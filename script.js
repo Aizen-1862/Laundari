@@ -1,9 +1,10 @@
 /* =========================================================
-   LAUNDRY — COMPLETE SCRIPT
-   Items + Photos + Receipt + Download
+   LAUNDRY
+   COMPLETE CLEAN SCRIPT
+   NO PHOTO SECTION CREATION
 ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", function () {
 
   /* =======================================================
      ITEMS
@@ -22,9 +23,10 @@ document.addEventListener("DOMContentLoaded", () => {
     "Inner Top Wear"
   ];
 
+
   const quantities = {};
 
-  items.forEach(item => {
+  items.forEach(function (item) {
     quantities[item] = 0;
   });
 
@@ -33,66 +35,85 @@ document.addEventListener("DOMContentLoaded", () => {
      ELEMENTS
   ======================================================= */
 
-  const itemsGrid = document.getElementById("itemsGrid");
-  const liveTotal = document.getElementById("liveTotal");
+  const itemsGrid =
+    document.getElementById("itemsGrid");
 
-  const formScreen = document.getElementById("formScreen");
-  const receiptScreen = document.getElementById("receiptScreen");
+  const liveTotal =
+    document.getElementById("liveTotal");
 
-  const submitBtn = document.getElementById("submitBtn");
-  const newBtn = document.getElementById("newBtn");
-  const downloadBtn = document.getElementById("downloadBtn");
+  const formScreen =
+    document.getElementById("formScreen");
 
-  const errorBox = document.getElementById("error");
-  const downloadMsg = document.getElementById("downloadMsg");
+  const receiptScreen =
+    document.getElementById("receiptScreen");
 
-  const receiptItems = document.getElementById("receiptItems");
-  const receiptNumber = document.getElementById("receiptNumber");
-  const receiptDate = document.getElementById("receiptDate");
-  const receiptTime = document.getElementById("receiptTime");
-  const totalItems = document.getElementById("totalItems");
+  const submitBtn =
+    document.getElementById("submitBtn");
 
-  const photoSection = document.getElementById("photoSection");
+  const newBtn =
+    document.getElementById("newBtn");
 
-  const cameraBtn = document.getElementById("cameraBtn");
-  const galleryBtn = document.getElementById("galleryBtn");
+  const downloadBtn =
+    document.getElementById("downloadBtn");
 
-  const cameraInput = document.getElementById("cameraInput");
-  const galleryInput = document.getElementById("galleryInput");
+  const errorBox =
+    document.getElementById("error");
 
-  const photoPreview = document.getElementById("photoPreview");
-  const photoCount = document.getElementById("photoCount");
+  const downloadMsg =
+    document.getElementById("downloadMsg");
 
-  const receiptPhotos = document.getElementById("receiptPhotos");
-  const receiptPhotoGrid = document.getElementById("receiptPhotoGrid");
+  const receiptItems =
+    document.getElementById("receiptItems");
+
+  const receiptNumber =
+    document.getElementById("receiptNumber");
+
+  const receiptDate =
+    document.getElementById("receiptDate");
+
+  const receiptTime =
+    document.getElementById("receiptTime");
+
+  const totalItems =
+    document.getElementById("totalItems");
+
+  const cameraBtn =
+    document.getElementById("cameraBtn");
+
+  const galleryBtn =
+    document.getElementById("galleryBtn");
+
+  const cameraInput =
+    document.getElementById("cameraInput");
+
+  const galleryInput =
+    document.getElementById("galleryInput");
+
+  const photoPreview =
+    document.getElementById("photoPreview");
+
+  const photoCount =
+    document.getElementById("photoCount");
+
+  const receiptPhotos =
+    document.getElementById("receiptPhotos");
+
+  const receiptPhotoGrid =
+    document.getElementById("receiptPhotoGrid");
 
 
   /* =======================================================
-     PHOTOS
+     PHOTO SETTINGS
   ======================================================= */
-
-  let selectedPhotos = [];
-
-  /*
-    Maximum number of photos.
-    Keeping this limited prevents the phone from
-    running out of memory.
-  */
 
   const MAX_PHOTOS = 6;
 
-  /*
-    Images are resized to this maximum dimension.
-  */
+  const MAX_IMAGE_SIZE = 1000;
 
-  const MAX_IMAGE_SIZE = 1280;
+  const IMAGE_QUALITY = 0.65;
 
-  /*
-    JPEG quality.
-    Smaller = less memory.
-  */
 
-  const IMAGE_QUALITY = 0.72;
+  let selectedPhotos = [];
 
 
   /* =======================================================
@@ -103,80 +124,114 @@ document.addEventListener("DOMContentLoaded", () => {
 
     itemsGrid.innerHTML = "";
 
-    items.forEach((item, index) => {
 
-      const card = document.createElement("div");
+    items.forEach(function (item) {
+
+      const card =
+        document.createElement("div");
 
       card.className = "item";
 
-      card.innerHTML = `
-        <span class="item-name">
-          ${item}
-        </span>
 
-        <div class="controls">
+      const name =
+        document.createElement("span");
 
-          <button
-            class="qty minus"
-            type="button"
-            aria-label="Decrease ${item}"
-          >
-            −
-          </button>
+      name.className = "item-name";
 
-          <span class="num">
-            0
-          </span>
-
-          <button
-            class="qty plus"
-            type="button"
-            aria-label="Increase ${item}"
-          >
-            +
-          </button>
-
-        </div>
-      `;
+      name.textContent = item;
 
 
-      const number = card.querySelector(".num");
-      const minus = card.querySelector(".minus");
-      const plus = card.querySelector(".plus");
+      const controls =
+        document.createElement("div");
+
+      controls.className = "controls";
 
 
-      plus.addEventListener("click", () => {
+      const minus =
+        document.createElement("button");
 
-        quantities[item]++;
+      minus.className = "qty";
 
-        number.textContent = quantities[item];
+      minus.type = "button";
 
-        updateTotal();
-
-        card.classList.remove("bump");
-
-        void card.offsetWidth;
-
-        card.classList.add("bump");
-      });
+      minus.textContent = "−";
 
 
-      minus.addEventListener("click", () => {
+      const number =
+        document.createElement("span");
 
-        if (quantities[item] <= 0) return;
+      number.className = "num";
 
-        quantities[item]--;
+      number.textContent =
+        quantities[item];
 
-        number.textContent = quantities[item];
 
-        updateTotal();
+      const plus =
+        document.createElement("button");
 
-        card.classList.remove("bump");
+      plus.className = "qty";
 
-        void card.offsetWidth;
+      plus.type = "button";
 
-        card.classList.add("bump");
-      });
+      plus.textContent = "+";
+
+
+      controls.appendChild(minus);
+
+      controls.appendChild(number);
+
+      controls.appendChild(plus);
+
+
+      card.appendChild(name);
+
+      card.appendChild(controls);
+
+
+      plus.addEventListener(
+        "click",
+        function () {
+
+          quantities[item]++;
+
+          number.textContent =
+            quantities[item];
+
+          updateTotal();
+
+          card.classList.remove("bump");
+
+          void card.offsetWidth;
+
+          card.classList.add("bump");
+
+        }
+      );
+
+
+      minus.addEventListener(
+        "click",
+        function () {
+
+          if (quantities[item] <= 0) {
+            return;
+          }
+
+          quantities[item]--;
+
+          number.textContent =
+            quantities[item];
+
+          updateTotal();
+
+          card.classList.remove("bump");
+
+          void card.offsetWidth;
+
+          card.classList.add("bump");
+
+        }
+      );
 
 
       itemsGrid.appendChild(card);
@@ -194,110 +249,178 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let total = 0;
 
-    items.forEach(item => {
+
+    items.forEach(function (item) {
+
       total += quantities[item];
+
     });
+
 
     liveTotal.textContent = total;
 
+
     return total;
+
   }
 
 
   /* =======================================================
-     PHOTO BUTTONS
+     CAMERA
   ======================================================= */
 
-  cameraBtn.addEventListener("click", () => {
+  cameraBtn.addEventListener(
+    "click",
+    function () {
 
-    /*
-      Camera input intentionally does NOT use multiple.
-      Android cameras are more reliable this way.
-    */
+      /*
+        Only ONE photo is requested from
+        the camera at a time.
+      */
 
-    cameraInput.click();
+      cameraInput.value = "";
 
-  });
+      cameraInput.click();
 
-
-  galleryBtn.addEventListener("click", () => {
-
-    galleryInput.click();
-
-  });
-
-
-  cameraInput.addEventListener("change", event => {
-
-    handleFiles(event.target.files);
-
-    /*
-      Reset input so the same photo can be selected again.
-    */
-
-    cameraInput.value = "";
-
-  });
-
-
-  galleryInput.addEventListener("change", event => {
-
-    handleFiles(event.target.files);
-
-    galleryInput.value = "";
-
-  });
+    }
+  );
 
 
   /* =======================================================
-     HANDLE PHOTOS
+     GALLERY
   ======================================================= */
 
-  async function handleFiles(fileList) {
+  galleryBtn.addEventListener(
+    "click",
+    function () {
 
-    if (!fileList || fileList.length === 0) {
+      galleryInput.value = "";
+
+      galleryInput.click();
+
+    }
+  );
+
+
+  /* =======================================================
+     CAMERA FILE
+  ======================================================= */
+
+  cameraInput.addEventListener(
+    "change",
+    function (event) {
+
+      if (!event.target.files) {
+        return;
+      }
+
+      handleFiles(
+        Array.from(event.target.files)
+      );
+
+    }
+  );
+
+
+  /* =======================================================
+     GALLERY FILES
+  ======================================================= */
+
+  galleryInput.addEventListener(
+    "change",
+    function (event) {
+
+      if (!event.target.files) {
+        return;
+      }
+
+      handleFiles(
+        Array.from(event.target.files)
+      );
+
+    }
+  );
+
+
+  /* =======================================================
+     HANDLE FILES
+  ======================================================= */
+
+  async function handleFiles(files) {
+
+    if (!files || files.length === 0) {
       return;
     }
 
 
-    if (selectedPhotos.length >= MAX_PHOTOS) {
+    const remaining =
+      MAX_PHOTOS - selectedPhotos.length;
 
-      alert(`You can add up to ${MAX_PHOTOS} photos.`);
+
+    if (remaining <= 0) {
+
+      alert(
+        "You can add up to 6 photos."
+      );
 
       return;
+
     }
 
 
-    const files = Array.from(fileList);
-
-    const remaining = MAX_PHOTOS - selectedPhotos.length;
-
-    const filesToProcess = files.slice(0, remaining);
+    const filesToProcess =
+      files.slice(0, remaining);
 
 
     try {
 
-      for (const file of filesToProcess) {
+      for (
+        let i = 0;
+        i < filesToProcess.length;
+        i++
+      ) {
 
-        if (!file.type.startsWith("image/")) {
+        const file =
+          filesToProcess[i];
+
+
+        if (
+          !file.type ||
+          !file.type.startsWith("image/")
+        ) {
           continue;
         }
 
-        const compressed = await compressImage(file);
 
-        selectedPhotos.push(compressed);
+        /*
+          Compress immediately so we don't keep
+          huge camera files in memory.
+        */
+
+        const compressed =
+          await compressImage(file);
+
+
+        selectedPhotos.push(
+          compressed
+        );
 
       }
 
 
       renderPhotoPreview();
 
+
     } catch (error) {
 
-      console.error("Photo processing error:", error);
+      console.error(
+        "Photo error:",
+        error
+      );
+
 
       alert(
-        "The photo could not be processed. Please try a smaller photo."
+        "Could not process this photo. Please try again."
       );
 
     }
@@ -311,115 +434,163 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function compressImage(file) {
 
-    return new Promise((resolve, reject) => {
+    return new Promise(
+      function (resolve, reject) {
 
-      const reader = new FileReader();
-
-
-      reader.onload = event => {
-
-        const img = new Image();
+        const reader =
+          new FileReader();
 
 
-        img.onload = () => {
+        reader.onload =
+          function (event) {
 
-          let width = img.width;
-          let height = img.height;
+            const image =
+              new Image();
 
 
-          /*
-            Resize large camera photos.
-          */
+            image.onload =
+              function () {
 
-          if (width > MAX_IMAGE_SIZE || height > MAX_IMAGE_SIZE) {
+                let width =
+                  image.naturalWidth;
 
-            if (width > height) {
+                let height =
+                  image.naturalHeight;
 
-              height =
-                Math.round(
-                  height * (MAX_IMAGE_SIZE / width)
+
+                /*
+                  Resize large images.
+                */
+
+                if (
+                  width > MAX_IMAGE_SIZE ||
+                  height > MAX_IMAGE_SIZE
+                ) {
+
+                  if (width >= height) {
+
+                    height =
+                      Math.round(
+                        height *
+                        (MAX_IMAGE_SIZE / width)
+                      );
+
+                    width =
+                      MAX_IMAGE_SIZE;
+
+                  } else {
+
+                    width =
+                      Math.round(
+                        width *
+                        (MAX_IMAGE_SIZE / height)
+                      );
+
+                    height =
+                      MAX_IMAGE_SIZE;
+
+                  }
+
+                }
+
+
+                const canvas =
+                  document.createElement(
+                    "canvas"
+                  );
+
+
+                canvas.width = width;
+
+                canvas.height = height;
+
+
+                const context =
+                  canvas.getContext("2d");
+
+
+                if (!context) {
+
+                  reject(
+                    new Error(
+                      "Canvas unavailable"
+                    )
+                  );
+
+                  return;
+
+                }
+
+
+                context.drawImage(
+                  image,
+                  0,
+                  0,
+                  width,
+                  height
                 );
 
-              width = MAX_IMAGE_SIZE;
 
-            } else {
+                /*
+                  JPEG is much smaller than
+                  the original camera image.
+                */
 
-              width =
-                Math.round(
-                  width * (MAX_IMAGE_SIZE / height)
+                const compressed =
+                  canvas.toDataURL(
+                    "image/jpeg",
+                    IMAGE_QUALITY
+                  );
+
+
+                resolve(compressed);
+
+
+                /*
+                  Release canvas memory.
+                */
+
+                canvas.width = 1;
+
+                canvas.height = 1;
+
+              };
+
+
+            image.onerror =
+              function () {
+
+                reject(
+                  new Error(
+                    "Image could not be loaded"
+                  )
                 );
 
-              height = MAX_IMAGE_SIZE;
-
-            }
-
-          }
+              };
 
 
-          const canvas = document.createElement("canvas");
+            image.src =
+              event.target.result;
 
-          canvas.width = width;
-          canvas.height = height;
-
-
-          const ctx = canvas.getContext("2d");
-
-          if (!ctx) {
-            reject(new Error("Canvas unavailable"));
-            return;
-          }
+          };
 
 
-          ctx.drawImage(
-            img,
-            0,
-            0,
-            width,
-            height
-          );
+        reader.onerror =
+          function () {
+
+            reject(
+              new Error(
+                "File could not be read"
+              )
+            );
+
+          };
 
 
-          /*
-            Convert to compressed JPEG.
-          */
+        reader.readAsDataURL(file);
 
-          const dataUrl = canvas.toDataURL(
-            "image/jpeg",
-            IMAGE_QUALITY
-          );
-
-
-          resolve(dataUrl);
-
-        };
-
-
-        img.onerror = () => {
-
-          reject(
-            new Error("Could not load image")
-          );
-
-        };
-
-
-        img.src = event.target.result;
-
-      };
-
-
-      reader.onerror = () => {
-
-        reject(
-          new Error("Could not read image")
-        );
-
-      };
-
-
-      reader.readAsDataURL(file);
-
-    });
+      }
+    );
 
   }
 
@@ -432,56 +603,70 @@ document.addEventListener("DOMContentLoaded", () => {
 
     photoPreview.innerHTML = "";
 
+
+    const count =
+      selectedPhotos.length;
+
+
     photoCount.textContent =
-      `${selectedPhotos.length} photo${selectedPhotos.length === 1 ? "" : "s"}`;
+      count === 1
+        ? "1 photo"
+        : count + " photos";
 
 
-    selectedPhotos.forEach((photo, index) => {
+    selectedPhotos.forEach(
+      function (photo, index) {
 
-      const box = document.createElement("div");
+        const box =
+          document.createElement("div");
 
-      box.className = "photo-preview-item";
-
-
-      const image = document.createElement("img");
-
-      image.src = photo;
-
-      image.alt = `Laundry photo ${index + 1}`;
-
-      image.loading = "lazy";
+        box.className =
+          "photo-preview-item";
 
 
-      const remove = document.createElement("button");
+        const image =
+          document.createElement("img");
 
-      remove.className = "remove-photo";
+        image.src = photo;
 
-      remove.type = "button";
-
-      remove.textContent = "×";
-
-      remove.setAttribute(
-        "aria-label",
-        "Remove photo"
-      );
+        image.alt =
+          "Laundry photo " + (index + 1);
 
 
-      remove.addEventListener("click", () => {
+        const remove =
+          document.createElement("button");
 
-        selectedPhotos.splice(index, 1);
+        remove.className =
+          "remove-photo";
 
-        renderPhotoPreview();
+        remove.type = "button";
 
-      });
+        remove.textContent = "×";
 
 
-      box.appendChild(image);
+        remove.addEventListener(
+          "click",
+          function () {
 
-      box.appendChild(remove);
+            selectedPhotos.splice(
+              index,
+              1
+            );
 
-      photoPreview.appendChild(box);
+            renderPhotoPreview();
 
-    });
+          }
+        );
+
+
+        box.appendChild(image);
+
+        box.appendChild(remove);
+
+        photoPreview.appendChild(box);
+
+      }
+    );
 
   }
 
@@ -490,50 +675,71 @@ document.addEventListener("DOMContentLoaded", () => {
      SUBMIT
   ======================================================= */
 
-  submitBtn.addEventListener("click", () => {
+  submitBtn.addEventListener(
+    "click",
+    function () {
 
-    errorBox.textContent = "";
-
-    const total = updateTotal();
+      errorBox.textContent = "";
 
 
-    if (total === 0) {
+      const total =
+        updateTotal();
 
-      errorBox.textContent =
-        "Please select at least one laundry item.";
 
-      return;
+      if (total === 0) {
+
+        errorBox.textContent =
+          "Please select at least one laundry item.";
+
+        return;
+
+      }
+
+
+      submitBtn.disabled = true;
+
+
+      submitBtn.querySelector(
+        "span"
+      ).textContent =
+        "Preparing Receipt...";
+
+
+      setTimeout(
+        function () {
+
+          createReceipt(total);
+
+
+          formScreen.classList.remove(
+            "active"
+          );
+
+          receiptScreen.classList.add(
+            "active"
+          );
+
+
+          window.scrollTo(
+            0,
+            0
+          );
+
+
+          submitBtn.disabled = false;
+
+
+          submitBtn.querySelector(
+            "span"
+          ).textContent =
+            "Submit Laundry";
+
+        },
+        300
+      );
+
     }
-
-
-    submitBtn.disabled = true;
-
-    submitBtn.querySelector("span").textContent =
-      "Preparing Receipt...";
-
-
-    setTimeout(() => {
-
-      createReceipt(total);
-
-      formScreen.classList.remove("active");
-
-      receiptScreen.classList.add("active");
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-
-
-      submitBtn.disabled = false;
-
-      submitBtn.querySelector("span").textContent =
-        "Submit Laundry";
-
-    }, 350);
-
-  });
+  );
 
 
   /* =======================================================
@@ -542,27 +748,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function createReceipt(total) {
 
-    const now = new Date();
+    const now =
+      new Date();
 
 
-    const year = now.getFullYear();
-
-    const month = String(
-      now.getMonth() + 1
-    ).padStart(2, "0");
-
-    const day = String(
-      now.getDate()
-    ).padStart(2, "0");
+    const year =
+      now.getFullYear();
 
 
-    const receiptId =
-      `LD-${year}${month}${day}-${Math.floor(
-        1000 + Math.random() * 9000
-      )}`;
+    const month =
+      String(
+        now.getMonth() + 1
+      ).padStart(2, "0");
 
 
-    const dateText =
+    const day =
+      String(
+        now.getDate()
+      ).padStart(2, "0");
+
+
+    const randomNumber =
+      Math.floor(
+        1000 +
+        Math.random() * 9000
+      );
+
+
+    const id =
+      "LD-" +
+      year +
+      month +
+      day +
+      "-" +
+      randomNumber;
+
+
+    const date =
       now.toLocaleDateString(
         undefined,
         {
@@ -573,7 +795,7 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
 
-    const timeText =
+    const time =
       now.toLocaleTimeString(
         undefined,
         {
@@ -583,39 +805,60 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
 
-    receiptNumber.textContent = receiptId;
+    receiptNumber.textContent =
+      id;
 
-    receiptDate.textContent = dateText;
+    receiptDate.textContent =
+      date;
 
-    receiptTime.textContent = timeText;
+    receiptTime.textContent =
+      time;
 
-    totalItems.textContent = total;
+    totalItems.textContent =
+      total;
 
 
     receiptItems.innerHTML = "";
 
 
-    items.forEach(item => {
+    items.forEach(
+      function (item) {
 
-      if (quantities[item] <= 0) {
-        return;
+        if (quantities[item] <= 0) {
+          return;
+        }
+
+
+        const row =
+          document.createElement("div");
+
+        row.className =
+          "receipt-row";
+
+
+        const name =
+          document.createElement("span");
+
+        name.textContent =
+          item;
+
+
+        const qty =
+          document.createElement("span");
+
+        qty.textContent =
+          quantities[item];
+
+
+        row.appendChild(name);
+
+        row.appendChild(qty);
+
+
+        receiptItems.appendChild(row);
+
       }
-
-
-      const row = document.createElement("div");
-
-      row.className = "row";
-
-
-      row.innerHTML = `
-        <span>${item}</span>
-        <span>${quantities[item]}</span>
-      `;
-
-
-      receiptItems.appendChild(row);
-
-    });
+    );
 
 
     createReceiptPhotos();
@@ -632,13 +875,16 @@ document.addEventListener("DOMContentLoaded", () => {
     receiptPhotoGrid.innerHTML = "";
 
 
-    if (selectedPhotos.length === 0) {
+    if (
+      selectedPhotos.length === 0
+    ) {
 
       receiptPhotos.classList.remove(
         "has-photos"
       );
 
       return;
+
     }
 
 
@@ -647,18 +893,28 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 
-    selectedPhotos.forEach((photo, index) => {
+    selectedPhotos.forEach(
+      function (photo, index) {
 
-      const image = document.createElement("img");
+        const image =
+          document.createElement("img");
 
-      image.src = photo;
 
-      image.alt =
-        `Laundry receipt photo ${index + 1}`;
+        image.src =
+          photo;
 
-      receiptPhotoGrid.appendChild(image);
 
-    });
+        image.alt =
+          "Receipt photo " +
+          (index + 1);
+
+
+        receiptPhotoGrid.appendChild(
+          image
+        );
+
+      }
+    );
 
   }
 
@@ -669,45 +925,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function loadHtml2Canvas() {
 
-    return new Promise((resolve, reject) => {
+    return new Promise(
+      function (resolve, reject) {
 
-      if (window.html2canvas) {
+        if (window.html2canvas) {
 
-        resolve(window.html2canvas);
+          resolve(
+            window.html2canvas
+          );
 
-        return;
-      }
+          return;
 
-
-      const script =
-        document.createElement("script");
-
-
-      script.src =
-        "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+        }
 
 
-      script.onload = () => {
+        const script =
+          document.createElement(
+            "script"
+          );
 
-        resolve(window.html2canvas);
 
-      };
+        script.src =
+          "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
 
 
-      script.onerror = () => {
+        script.onload =
+          function () {
 
-        reject(
-          new Error(
-            "Could not load receipt download library."
-          )
+            resolve(
+              window.html2canvas
+            );
+
+          };
+
+
+        script.onerror =
+          function () {
+
+            reject(
+              new Error(
+                "Receipt download library failed"
+              )
+            );
+
+          };
+
+
+        document.head.appendChild(
+          script
         );
 
-      };
-
-
-      document.head.appendChild(script);
-
-    });
+      }
+    );
 
   }
 
@@ -716,179 +985,222 @@ document.addEventListener("DOMContentLoaded", () => {
      DOWNLOAD RECEIPT
   ======================================================= */
 
-  downloadBtn.addEventListener("click", async () => {
-
-    downloadMsg.textContent =
-      "Preparing your receipt...";
-
-
-    downloadBtn.disabled = true;
-
-
-    try {
-
-      const html2canvas =
-        await loadHtml2Canvas();
-
-
-      const receipt =
-        document.getElementById(
-          "receiptCapture"
-        );
-
-
-      /*
-        Lower scale = much less memory usage.
-        2 is still sharp on phones.
-      */
-
-      const canvas =
-        await html2canvas(
-          receipt,
-          {
-            scale: 2,
-
-            backgroundColor: "#ffffff",
-
-            useCORS: true,
-
-            logging: false
-          }
-        );
-
-
-      canvas.toBlob(
-        blob => {
-
-          if (!blob) {
-
-            downloadMsg.textContent =
-              "Could not create the receipt image.";
-
-            downloadBtn.disabled = false;
-
-            return;
-          }
-
-
-          const url =
-            URL.createObjectURL(blob);
-
-
-          const link =
-            document.createElement("a");
-
-
-          link.href = url;
-
-
-          const number =
-            receiptNumber.textContent
-              .replace(/[^a-zA-Z0-9-]/g, "");
-
-
-          link.download =
-            `Laundry-Receipt-${number}.png`;
-
-
-          document.body.appendChild(link);
-
-          link.click();
-
-          link.remove();
-
-
-          setTimeout(() => {
-
-            URL.revokeObjectURL(url);
-
-          }, 1000);
-
-
-          downloadMsg.textContent =
-            "✓ Receipt saved successfully!";
-
-          downloadBtn.disabled = false;
-
-        },
-
-        "image/png"
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        "Receipt download error:",
-        error
-      );
-
+  downloadBtn.addEventListener(
+    "click",
+    async function () {
 
       downloadMsg.textContent =
-        "Could not download receipt. Please try again.";
+        "Preparing receipt...";
 
 
-      downloadBtn.disabled = false;
+      downloadBtn.disabled = true;
+
+
+      try {
+
+        const html2canvas =
+          await loadHtml2Canvas();
+
+
+        const receipt =
+          document.getElementById(
+            "receiptCapture"
+          );
+
+
+        /*
+          Scale 1.5 keeps memory usage
+          much lower on phones.
+        */
+
+        const canvas =
+          await html2canvas(
+            receipt,
+            {
+              scale: 1.5,
+
+              backgroundColor:
+                "#ffffff",
+
+              useCORS: true,
+
+              logging: false
+            }
+          );
+
+
+        canvas.toBlob(
+          function (blob) {
+
+            if (!blob) {
+
+              downloadMsg.textContent =
+                "Could not create receipt image.";
+
+              downloadBtn.disabled =
+                false;
+
+              return;
+
+            }
+
+
+            const url =
+              URL.createObjectURL(blob);
+
+
+            const link =
+              document.createElement(
+                "a"
+              );
+
+
+            link.href =
+              url;
+
+
+            const cleanNumber =
+              receiptNumber.textContent
+                .replace(
+                  /[^a-zA-Z0-9-]/g,
+                  ""
+                );
+
+
+            link.download =
+              "Laundry-Receipt-" +
+              cleanNumber +
+              ".png";
+
+
+            document.body.appendChild(
+              link
+            );
+
+
+            link.click();
+
+
+            link.remove();
+
+
+            setTimeout(
+              function () {
+
+                URL.revokeObjectURL(
+                  url
+                );
+
+              },
+              1000
+            );
+
+
+            downloadMsg.textContent =
+              "✓ Receipt saved successfully!";
+
+
+            downloadBtn.disabled =
+              false;
+
+
+            /*
+              Free the canvas memory.
+            */
+
+            canvas.width = 1;
+
+            canvas.height = 1;
+
+          },
+          "image/png"
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Download error:",
+          error
+        );
+
+
+        downloadMsg.textContent =
+          "Could not download receipt. Please try again.";
+
+
+        downloadBtn.disabled =
+          false;
+
+      }
 
     }
-
-  });
+  );
 
 
   /* =======================================================
      NEW SUBMISSION
   ======================================================= */
 
-  newBtn.addEventListener("click", () => {
+  newBtn.addEventListener(
+    "click",
+    function () {
 
-    items.forEach(item => {
+      items.forEach(
+        function (item) {
 
-      quantities[item] = 0;
+          quantities[item] = 0;
 
-    });
-
-
-    selectedPhotos = [];
-
-
-    receiptPhotoGrid.innerHTML = "";
-
-    receiptPhotos.classList.remove(
-      "has-photos"
-    );
+        }
+      );
 
 
-    renderItems();
-
-    updateTotal();
-
-    renderPhotoPreview();
+      selectedPhotos = [];
 
 
-    errorBox.textContent = "";
-
-    downloadMsg.textContent = "";
-
-
-    receiptScreen.classList.remove(
-      "active"
-    );
-
-    formScreen.classList.add(
-      "active"
-    );
+      receiptPhotoGrid.innerHTML =
+        "";
 
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+      receiptPhotos.classList.remove(
+        "has-photos"
+      );
 
-  });
+
+      renderItems();
+
+      updateTotal();
+
+      renderPhotoPreview();
+
+
+      errorBox.textContent =
+        "";
+
+      downloadMsg.textContent =
+        "";
+
+
+      receiptScreen.classList.remove(
+        "active"
+      );
+
+      formScreen.classList.add(
+        "active"
+      );
+
+
+      window.scrollTo(
+        0,
+        0
+      );
+
+    }
+  );
 
 
   /* =======================================================
-     START
+     START APP
   ======================================================= */
 
   renderItems();
