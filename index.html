@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
@@ -16,28 +17,26 @@
 
 <body>
 
-  <!-- Background -->
-  <div class="glow glow1"></div>
-  <div class="glow glow2"></div>
-
+  <div class="glow glow-one"></div>
+  <div class="glow glow-two"></div>
 
   <main class="app">
 
-    <!-- ==================================================
-         FORM SCREEN
-    =================================================== -->
+    <!-- =================================================
+         MAIN FORM
+    ================================================== -->
 
     <section id="formScreen" class="screen active">
 
       <header class="hero">
 
         <div class="brand">
-          ● LAUNDRY
+          <span>●</span> LAUNDRY
         </div>
 
         <h1>
           Ready for a<br>
-          <span>fresh start?</span>
+          <strong>fresh start?</strong>
         </h1>
 
         <p>
@@ -48,68 +47,52 @@
       </header>
 
 
-      <!-- ITEMS -->
+      <!-- =================================================
+           ITEMS
+      ================================================== -->
 
       <section class="items-card">
 
-        <div class="section-title">
+        <div class="section-header">
 
           <div>
             <small>YOUR ITEMS</small>
 
-            <h2>
-              Select & count
-            </h2>
+            <h2>Select & count</h2>
           </div>
 
-          <div class="total">
+          <div class="total-box">
 
-            <b id="liveTotal">
-              0
-            </b>
+            <b id="liveTotal">0</b>
 
-            <span>
-              items
-            </span>
+            <span>items</span>
 
           </div>
 
         </div>
 
 
-        <div
-          id="itemsGrid"
-          class="items-grid"
-        ></div>
+        <div id="itemsGrid" class="items-grid"></div>
 
       </section>
 
 
-      <!-- PHOTO FEATURE -->
+      <!-- =================================================
+           PHOTO SECTION
+           IMPORTANT: ONLY ONE PHOTO SECTION
+      ================================================== -->
 
-      <section
-        id="photoSection"
-        class="photo-section"
-      >
+      <section class="photo-section">
 
         <div class="photo-header">
 
           <div>
+            <small>OPTIONAL</small>
 
-            <small>
-              OPTIONAL
-            </small>
-
-            <h2>
-              📸 Clothes Photos
-            </h2>
-
+            <h2>📸 Clothes Photos</h2>
           </div>
 
-          <div
-            id="photoCount"
-            class="photo-count"
-          >
+          <div id="photoCount" class="photo-count">
             0 photos
           </div>
 
@@ -129,8 +112,7 @@
             class="photo-button"
             type="button"
           >
-            <span>📷</span>
-            Take Photo
+            📷 <span>Take Photo</span>
           </button>
 
 
@@ -139,26 +121,24 @@
             class="photo-button"
             type="button"
           >
-            <span>🖼️</span>
-            Gallery
+            🖼️ <span>Gallery</span>
           </button>
 
         </div>
 
 
-        <!-- Camera input -->
+        <!-- Hidden camera input -->
 
         <input
           id="cameraInput"
           type="file"
           accept="image/*"
           capture="environment"
-          multiple
           hidden
         >
 
 
-        <!-- Gallery input -->
+        <!-- Hidden gallery input -->
 
         <input
           id="galleryInput"
@@ -169,7 +149,7 @@
         >
 
 
-        <!-- Preview -->
+        <!-- Photo previews -->
 
         <div
           id="photoPreview"
@@ -179,29 +159,24 @@
       </section>
 
 
-      <!-- SUBMIT -->
+      <!-- =================================================
+           SUBMIT
+      ================================================== -->
 
       <button
         id="submitBtn"
-        class="primary"
+        class="primary-button"
         type="button"
       >
 
-        <span>
-          Submit Laundry
-        </span>
+        <span>Submit Laundry</span>
 
-        <b>
-          →
-        </b>
+        <b>→</b>
 
       </button>
 
 
-      <p
-        id="error"
-        class="error"
-      ></p>
+      <p id="error" class="error"></p>
 
 
       <p class="privacy-note">
@@ -212,28 +187,23 @@
 
 
 
-    <!-- ==================================================
-         RECEIPT SCREEN
-    =================================================== -->
+    <!-- =================================================
+         RECEIPT
+    ================================================== -->
 
-    <section
-      id="receiptScreen"
-      class="screen"
-    >
+    <section id="receiptScreen" class="screen">
 
-      <header class="receipt-top">
+      <header class="receipt-header">
 
         <div class="brand">
-          ● LAUNDRY
+          <span>●</span> LAUNDRY
         </div>
 
-        <div class="success">
+        <div class="success-circle">
           ✓
         </div>
 
-        <h1>
-          All set! 🎉
-        </h1>
+        <h1>All set! 🎉</h1>
 
         <p>
           Your laundry receipt is ready.
@@ -242,33 +212,30 @@
       </header>
 
 
-      <!-- RECEIPT -->
+      <!-- =================================================
+           RECEIPT CAPTURE AREA
+      ================================================== -->
 
-      <div
-        id="receiptCapture"
-        class="receipt"
-      >
+      <div id="receiptCapture" class="receipt">
 
-        <div class="receipt-logo">
+        <div class="receipt-brand">
           LAUNDRY
         </div>
 
-        <div class="caption">
+        <div class="receipt-caption">
           SUBMISSION RECEIPT
         </div>
 
 
-        <!-- Confirmation -->
+        <div class="confirmation">
 
-        <div class="confirmed">
-
-          <div>
+          <div class="confirmation-icon">
             ✓
           </div>
 
-          <b>
+          <strong>
             Submission Confirmed
-          </b>
+          </strong>
 
           <span>
             Keep this receipt for your records.
@@ -279,44 +246,21 @@
 
         <!-- Receipt information -->
 
-        <div class="meta">
+        <div class="receipt-meta">
 
           <div>
-
-            <small>
-              Receipt No.
-            </small>
-
-            <b id="receiptNumber">
-              —
-            </b>
-
+            <small>Receipt No.</small>
+            <b id="receiptNumber">—</b>
           </div>
 
-
           <div>
-
-            <small>
-              Date
-            </small>
-
-            <b id="receiptDate">
-              —
-            </b>
-
+            <small>Date</small>
+            <b id="receiptDate">—</b>
           </div>
 
-
           <div>
-
-            <small>
-              Time
-            </small>
-
-            <b id="receiptTime">
-              —
-            </b>
-
+            <small>Time</small>
+            <b id="receiptTime">—</b>
           </div>
 
         </div>
@@ -324,20 +268,15 @@
 
         <!-- Items -->
 
-        <div class="rows">
+        <div class="receipt-items">
 
-          <div class="row head">
+          <div class="receipt-row receipt-heading">
 
-            <span>
-              ITEM
-            </span>
+            <span>ITEM</span>
 
-            <span>
-              QTY
-            </span>
+            <span>QTY</span>
 
           </div>
-
 
           <div id="receiptItems"></div>
 
@@ -346,15 +285,11 @@
 
         <!-- Total -->
 
-        <div class="grand">
+        <div class="receipt-total">
 
-          <span>
-            Total Items
-          </span>
+          <span>Total Items</span>
 
-          <b id="totalItems">
-            0
-          </b>
+          <b id="totalItems">0</b>
 
         </div>
 
@@ -366,7 +301,7 @@
           class="receipt-photos"
         >
 
-          <div class="receipt-photo-title">
+          <div class="receipt-photo-heading">
             CLOTHES PHOTOS
           </div>
 
@@ -385,28 +320,28 @@
       </div>
 
 
-      <!-- Actions -->
+      <!-- =================================================
+           RECEIPT ACTIONS
+      ================================================== -->
 
       <div class="actions">
 
         <button
           id="downloadBtn"
-          class="primary"
+          class="primary-button"
           type="button"
         >
-          <span>
-            ↓ Download Receipt
-          </span>
 
-          <b>
-            ↗
-          </b>
+          <span>↓ Download Receipt</span>
+
+          <b>↗</b>
+
         </button>
 
 
         <button
           id="newBtn"
-          class="secondary"
+          class="secondary-button"
           type="button"
         >
           ＋ New Submission
