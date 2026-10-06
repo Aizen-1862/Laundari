@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#ff7200">
+<title>LAUNDRY</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="glow glow1"></div><div class="glow glow2"></div>
+<main class="app">
+<section id="formScreen" class="screen active">
+<header class="hero">
+<div class="brand">● LAUNDRY</div>
+<h1>Ready for a<br><span>fresh start?</span></h1>
+<p>Select the clothes you're sending to laundry and add their quantities.</p>
+</header>
+<section class="items-card">
+<div class="section-title"><div><small>YOUR ITEMS</small><h2>Select & count</h2></div><div class="total"><b id="liveTotal">0</b><span>items</span></div></div>
+<div id="itemsGrid" class="items-grid"></div>
+</section>
+<button id="submitBtn" class="primary">Submit Laundry <b>→</b></button>
+<p id="error" class="error"></p>
+</section>
+
+<section id="receiptScreen" class="screen">
+<header class="receipt-top">
+<div class="brand">● LAUNDRY</div>
+<div class="success">✓</div><h1>All set! 🎉</h1><p>Your laundry receipt is ready.</p>
+</header>
+<div id="receiptCapture" class="receipt">
+<div class="receipt-logo">LAUNDRY</div><div class="caption">SUBMISSION RECEIPT</div>
+<div class="confirmed"><div>✓</div><b>Submission Confirmed</b><span>Keep this receipt for your records.</span></div>
+<div class="meta"><div><small>Receipt No.</small><b id="receiptNumber">—</b></div><div><small>Date</small><b id="receiptDate">—</b></div><div><small>Time</small><b id="receiptTime">—</b></div></div>
+<div class="rows"><div class="row head"><span>ITEM</span><span>QTY</span></div><div id="receiptItems"></div></div>
+<div class="grand"><span>Total Items</span><b id="totalItems">0</b></div>
+<footer>Thank you for using LAUNDRY • Keep this receipt</footer>
+</div>
+<div class="actions">
+<button id="downloadBtn" class="primary">↓ Download Receipt <b>↗</b></button>
+<button id="newBtn" class="secondary">＋ New Submission</button>
+<p id="downloadMsg"></p>
+</div>
+</section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
