@@ -2,41 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
+
   <meta name="theme-color" content="#ff7200">
 
-  <title>LAUNDRY — Fresh. Clean. Simple.</title>
+  <title>LAUNDRY</title>
 
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <div class="bg-glow glow-one"></div>
-  <div class="bg-glow glow-two"></div>
+  <!-- Background -->
+  <div class="glow glow1"></div>
+  <div class="glow glow2"></div>
+
 
   <main class="app">
 
-    <!-- =================================================
+    <!-- ==================================================
          FORM SCREEN
-    ================================================== -->
+    =================================================== -->
 
-    <section id="formScreen" class="screen">
+    <section id="formScreen" class="screen active">
 
-      <div class="brand">
-        <div class="brand-mark">L</div>
+      <header class="hero">
 
-        <div>
-          <div class="brand-name">LAUNDRY</div>
-          <div class="brand-tag">FRESH • CLEAN • SIMPLE</div>
-        </div>
-      </div>
-
-
-      <div class="hero">
-
-        <div class="eyebrow">
-          LAUNDRY SUBMISSION
+        <div class="brand">
+          ● LAUNDRY
         </div>
 
         <h1>
@@ -45,262 +41,379 @@
         </h1>
 
         <p>
-          Select the clothes you're giving to laundry
-          and add photos so everything can be easily
-          identified.
+          Select the clothes you're sending to laundry
+          and add their quantities.
         </p>
 
-      </div>
+      </header>
 
 
-      <!-- =================================================
-           ITEMS
-      ================================================== -->
+      <!-- ITEMS -->
 
-      <div class="section-card">
+      <section class="items-card">
 
-        <div class="section-heading">
+        <div class="section-title">
 
           <div>
-            <h2>Your Clothes</h2>
+            <small>YOUR ITEMS</small>
 
-            <p>
-              Select the items and quantity
-            </p>
+            <h2>
+              Select & count
+            </h2>
           </div>
 
-          <div class="total-pill">
-            <span id="liveTotal">0</span>
-            <small>ITEMS</small>
+          <div class="total">
+
+            <b id="liveTotal">
+              0
+            </b>
+
+            <span>
+              items
+            </span>
+
           </div>
 
         </div>
 
 
-        <div id="itemsGrid" class="items-grid"></div>
-
-      </div>
-
-
-      <!-- =================================================
-           PHOTO SECTION
-           JS automatically adds the photo uploader here.
-      ================================================== -->
-
-      <!-- =================================================
-           SUBMIT
-      ================================================== -->
-
-      <div class="submit-area">
-
         <div
-          id="error"
-          class="error-message"
-          style="display:none;"
+          id="itemsGrid"
+          class="items-grid"
         ></div>
 
-        <button
-          id="submitBtn"
-          class="submit-button"
-          type="button"
-        >
-          <span>Submit Laundry</span>
-          <span class="submit-arrow">→</span>
-        </button>
+      </section>
 
-        <p class="secure-note">
-          🔒 Your submission details stay on this device.
+
+      <!-- PHOTO FEATURE -->
+
+      <section
+        id="photoSection"
+        class="photo-section"
+      >
+
+        <div class="photo-header">
+
+          <div>
+
+            <small>
+              OPTIONAL
+            </small>
+
+            <h2>
+              📸 Clothes Photos
+            </h2>
+
+          </div>
+
+          <div
+            id="photoCount"
+            class="photo-count"
+          >
+            0 photos
+          </div>
+
+        </div>
+
+
+        <p class="photo-description">
+          Add photos of the clothes you're giving to
+          laundry. They'll appear on your receipt too.
         </p>
 
-      </div>
+
+        <div class="photo-buttons">
+
+          <button
+            id="cameraBtn"
+            class="photo-button"
+            type="button"
+          >
+            <span>📷</span>
+            Take Photo
+          </button>
+
+
+          <button
+            id="galleryBtn"
+            class="photo-button"
+            type="button"
+          >
+            <span>🖼️</span>
+            Gallery
+          </button>
+
+        </div>
+
+
+        <!-- Camera input -->
+
+        <input
+          id="cameraInput"
+          type="file"
+          accept="image/*"
+          capture="environment"
+          multiple
+          hidden
+        >
+
+
+        <!-- Gallery input -->
+
+        <input
+          id="galleryInput"
+          type="file"
+          accept="image/*"
+          multiple
+          hidden
+        >
+
+
+        <!-- Preview -->
+
+        <div
+          id="photoPreview"
+          class="photo-preview"
+        ></div>
+
+      </section>
+
+
+      <!-- SUBMIT -->
+
+      <button
+        id="submitBtn"
+        class="primary"
+        type="button"
+      >
+
+        <span>
+          Submit Laundry
+        </span>
+
+        <b>
+          →
+        </b>
+
+      </button>
+
+
+      <p
+        id="error"
+        class="error"
+      ></p>
+
+
+      <p class="privacy-note">
+        🔒 Your photos stay on this device for the receipt.
+      </p>
 
     </section>
 
 
-    <!-- =================================================
+
+    <!-- ==================================================
          RECEIPT SCREEN
-    ================================================== -->
+    =================================================== -->
 
     <section
       id="receiptScreen"
-      class="screen receipt-screen"
-      style="display:none;"
+      class="screen"
     >
 
-      <div class="receipt-top">
+      <header class="receipt-top">
 
-        <div class="success-icon">
+        <div class="brand">
+          ● LAUNDRY
+        </div>
+
+        <div class="success">
           ✓
         </div>
 
-        <div>
-          <div class="eyebrow">
-            SUBMISSION COMPLETE
-          </div>
+        <h1>
+          All set! 🎉
+        </h1>
 
-          <h1>
-            You're all<br>
-            <span>set.</span>
-          </h1>
+        <p>
+          Your laundry receipt is ready.
+        </p>
+
+      </header>
+
+
+      <!-- RECEIPT -->
+
+      <div
+        id="receiptCapture"
+        class="receipt"
+      >
+
+        <div class="receipt-logo">
+          LAUNDRY
         </div>
 
-      </div>
-
-
-      <!-- =================================================
-           RECEIPT CAPTURE
-      ================================================== -->
-
-      <div id="receiptCapture" class="receipt-card">
-
-        <div class="receipt-header">
-
-          <div class="receipt-logo">
-            <div class="receipt-logo-mark">L</div>
-
-            <div>
-              <div class="receipt-logo-name">
-                LAUNDRY
-              </div>
-
-              <div class="receipt-logo-sub">
-                FRESH • CLEAN • SIMPLE
-              </div>
-            </div>
-          </div>
-
-          <div class="receipt-label">
-            SUBMISSION<br>
-            RECEIPT
-          </div>
-
+        <div class="caption">
+          SUBMISSION RECEIPT
         </div>
 
 
-        <div class="receipt-divider"></div>
+        <!-- Confirmation -->
 
+        <div class="confirmed">
 
-        <div class="receipt-confirmation">
-
-          <div class="mini-check">
+          <div>
             ✓
           </div>
 
-          <div>
-            <strong>
-              Laundry received
-            </strong>
-
-            <span>
-              Your items have been recorded.
-            </span>
-          </div>
-
-        </div>
-
-
-        <!-- META -->
-
-        <div class="receipt-meta">
-
-          <div>
-            <span>RECEIPT NO.</span>
-            <strong id="receiptNumber">
-              —
-            </strong>
-          </div>
-
-          <div>
-            <span>DATE</span>
-            <strong id="receiptDate">
-              —
-            </strong>
-          </div>
-
-          <div>
-            <span>TIME</span>
-            <strong id="receiptTime">
-              —
-            </strong>
-          </div>
-
-        </div>
-
-
-        <!-- ITEMS -->
-
-        <div class="receipt-section-title">
-          ITEMS SUBMITTED
-        </div>
-
-        <div
-          id="receiptItems"
-          class="receipt-items"
-        ></div>
-
-
-        <!-- TOTAL -->
-
-        <div class="receipt-total">
+          <b>
+            Submission Confirmed
+          </b>
 
           <span>
-            TOTAL ITEMS
+            Keep this receipt for your records.
           </span>
 
-          <strong id="totalItems">
-            0 items
-          </strong>
+        </div>
+
+
+        <!-- Receipt information -->
+
+        <div class="meta">
+
+          <div>
+
+            <small>
+              Receipt No.
+            </small>
+
+            <b id="receiptNumber">
+              —
+            </b>
+
+          </div>
+
+
+          <div>
+
+            <small>
+              Date
+            </small>
+
+            <b id="receiptDate">
+              —
+            </b>
+
+          </div>
+
+
+          <div>
+
+            <small>
+              Time
+            </small>
+
+            <b id="receiptTime">
+              —
+            </b>
+
+          </div>
 
         </div>
 
 
-        <!-- PHOTO SECTION WILL BE INSERTED HERE BY JS -->
+        <!-- Items -->
+
+        <div class="rows">
+
+          <div class="row head">
+
+            <span>
+              ITEM
+            </span>
+
+            <span>
+              QTY
+            </span>
+
+          </div>
 
 
-        <div class="receipt-footer">
-
-          <div class="footer-line"></div>
-
-          <p>
-            Thank you for choosing LAUNDRY.
-          </p>
-
-          <small>
-            Keep this receipt for your records.
-          </small>
+          <div id="receiptItems"></div>
 
         </div>
+
+
+        <!-- Total -->
+
+        <div class="grand">
+
+          <span>
+            Total Items
+          </span>
+
+          <b id="totalItems">
+            0
+          </b>
+
+        </div>
+
+
+        <!-- Receipt photos -->
+
+        <div
+          id="receiptPhotos"
+          class="receipt-photos"
+        >
+
+          <div class="receipt-photo-title">
+            CLOTHES PHOTOS
+          </div>
+
+          <div
+            id="receiptPhotoGrid"
+            class="receipt-photo-grid"
+          ></div>
+
+        </div>
+
+
+        <footer>
+          Thank you for using LAUNDRY • Keep this receipt
+        </footer>
 
       </div>
 
 
-      <!-- =================================================
-           ACTIONS
-      ================================================== -->
+      <!-- Actions -->
 
-      <div class="receipt-actions">
+      <div class="actions">
 
         <button
           id="downloadBtn"
-          class="download-button"
+          class="primary"
           type="button"
         >
-          <span>↓</span>
-          <span>Download Receipt</span>
+          <span>
+            ↓ Download Receipt
+          </span>
+
+          <b>
+            ↗
+          </b>
         </button>
+
 
         <button
           id="newBtn"
-          class="new-button"
+          class="secondary"
           type="button"
         >
-          + New Submission
+          ＋ New Submission
         </button>
 
-        <div
-          id="downloadMsg"
-          class="download-message"
-        ></div>
+
+        <p id="downloadMsg"></p>
 
       </div>
 
@@ -308,10 +421,6 @@
 
   </main>
 
-
-  <!-- =================================================
-       JAVASCRIPT
-  ================================================== -->
 
   <script src="script.js"></script>
 
