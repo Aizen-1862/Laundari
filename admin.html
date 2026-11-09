@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ff7200">
+  <title>LAUNDRI — Warden Admin</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <main class="admin-app">
+    <header class="brand-row"><a class="brand" href="./">● LAUNDRI</a><span class="admin-tag">WARDEN PORTAL</span></header>
+    <section id="loginPanel" class="panel login-panel">
+      <div class="eyebrow">PRIVATE ACCESS</div>
+      <h1>Warden <strong>login.</strong></h1>
+      <p class="muted">This area is reserved for the authorized hostel warden.</p>
+      <form id="loginForm">
+        <label for="adminUsername">Admin username</label>
+        <input id="adminUsername" name="username" autocomplete="username" required maxlength="60" placeholder="Enter admin username">
+        <label for="adminPassword">Password</label>
+        <input id="adminPassword" name="password" type="password" autocomplete="current-password" required maxlength="100" placeholder="Enter admin password">
+        <button class="primary" id="loginButton" type="submit">Secure login <span>→</span></button>
+      </form>
+      <p id="loginMessage" class="message" role="status"></p>
+      <a class="back-link" href="./">← Back to student website</a>
+    </section>
+
+    <section id="dashboard" hidden>
+      <div class="dashboard-head">
+        <div><div class="eyebrow">WARDEN CONTROL CENTER</div><h1>All laundry <strong>records.</strong></h1><p class="muted">Signed in as <b id="adminName"></b></p></div>
+        <button id="logoutButton" class="outline">Logout</button>
+      </div>
+      <div class="stats">
+        <article class="stat"><span>Registered students</span><b id="studentCount">—</b></article>
+        <article class="stat"><span>Total submissions</span><b id="receiptCount">—</b></article>
+        <article class="stat"><span>Last 7 days</span><b id="recentCount">—</b></article>
+      </div>
+      <section class="panel">
+        <div class="section-title"><div><div class="eyebrow">RECORDS</div><h2>Student submissions</h2></div></div>
+        <form id="filterForm" class="filters">
+          <input id="searchInput" placeholder="Search name, room or receipt…" maxlength="100" aria-label="Search records">
+          <input id="dateInput" type="date" aria-label="Filter by date">
+          <button class="primary" type="submit">Search</button>
+          <button class="outline" id="clearFilters" type="button">Clear</button>
+        </form>
+        <p id="recordMessage" class="message" role="status"></p>
+        <div id="recordsList" class="records-list"></div>
+        <button id="loadMore" class="outline load-more" type="button" hidden>Load more records</button>
+      </section>
+      <section id="detailPanel" class="panel detail-panel" hidden>
+        <div class="section-title"><div><div class="eyebrow">SUBMISSION DETAILS</div><h2 id="detailTitle">Receipt</h2></div><button id="closeDetail" class="outline" type="button">Close</button></div>
+        <p id="detailStudent" class="muted"></p>
+        <div id="detailItems" class="detail-items"></div>
+        <div id="detailPhotos" class="detail-photos"></div>
+      </section>
+      <p class="privacy-note">Student records are confidential. Use this dashboard only for authorized hostel administration.</p>
+    </section>
+  </main>
+  <script src="config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
