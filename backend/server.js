@@ -154,7 +154,7 @@ app.get("/api/admin/receipts", requireAdmin, async (req, res, next) => {
   try {
     const search = String(req.query.search || "").trim().slice(0, 100);
     const date = String(req.query.date || "").trim();
-    if (date && !/^\\d{4}-\\d{2}-\\d{2}$/.test(date)) return res.status(400).json({ error: "Date must use YYYY-MM-DD." });
+    if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) return res.status(400).json({ error: "Date must use YYYY-MM-DD." });
     const limit = Math.min(100, Math.max(1, Number.parseInt(req.query.limit, 10) || 50));
     const offset = Math.max(0, Number.parseInt(req.query.offset, 10) || 0);
     const pattern = "%" + search + "%";
@@ -172,7 +172,7 @@ app.get("/api/admin/receipts", requireAdmin, async (req, res, next) => {
 
 app.get("/api/admin/receipts/:id", requireAdmin, async (req, res, next) => {
   try {
-    if (!/^\\d+$/.test(req.params.id)) return res.status(400).json({ error: "Invalid receipt." });
+    if (!/^\d+$/.test(req.params.id)) return res.status(400).json({ error: "Invalid receipt." });
     const result = await pool.query(`
       SELECT r.id, r.receipt_number, r.items, r.total_items, r.photos, r.created_at,
              u.name AS student_name, u.room_number
