@@ -12,6 +12,9 @@ const PORT = process.env.PORT || 10000;
 const DATABASE_URL = process.env.DATABASE_URL;
 const JWT_SECRET = process.env.JWT_SECRET;
 const RESET_PHRASE = process.env.RESET_PHRASE;
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "";
+const ADMIN_PASSWORD_HASH = ADMIN_PASSWORD ? bcrypt.hashSync(ADMIN_PASSWORD, 12) : "";
 const CORS_ORIGIN = (process.env.CORS_ORIGIN || "https://aizen-1862.github.io").split(",").map(v => v.trim());
 
 if (!DATABASE_URL || !JWT_SECRET || !RESET_PHRASE) {
@@ -40,6 +43,7 @@ app.use(express.json({ limit: "12mb" }));
 
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 12, standardHeaders: "draft-7", legacyHeaders: false });
 const resetLimiter = rateLimit({ windowMs: 60 * 60 * 1000, limit: 5, standardHeaders: "draft-7", legacyHeaders: false });
+const adminLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 6, standardHeaders: "draft-7", legacyHeaders: false });
 
 async function initializeDatabase() {
   await pool.query(`
@@ -90,7 +94,7 @@ function requireAuth(req, res, next) {
     return res.status(401).json({ error: "Your session expired. Please log in again." });
   }
 }
-function safePhraseMatch(candidate) {
+function requireAdmin(req, res, next) {\n  const header = req.get("authorization") || "";\n  const token = header.startsWith("Bearer ") ? header.slice(7) : "";\n  if (!token) return res.status(401).json({ error: "Please sign in as the warden." });\n  try {\n    const payload = jwt.verify(token, JWT_SECRET, { issuer: "laundari-api", audience: "laundari-web" });\n    if (payload.role !== "admin" || payload.sub !== "warden") return res.status(403).json({ error: "Warden access only." });\n    req.admin = payload;\n    return next();\n  } catch { return res.status(401).json({ error: "Your admin session expired. Please sign in again." }); }\n}\nfunction safePhraseMatch(candidate) {
   const a = Buffer.from(String(candidate || ""), "utf8");
   const b = Buffer.from(RESET_PHRASE, "utf8");
   return a.length === b.length && crypto.timingSafeEqual(a, b);
@@ -102,6 +106,65 @@ function receiptNumber() {
 }
 
 app.get("/api/health", (_req, res) => res.json({ ok: true, service: "laundari-api" }));
+
+// Warden-only authentication and records. Credentials stay in Render environment variables.
+app.post("/api/admin/login", adminLimiter, async (req, res) => {
+  if (!ADMIN_USERNAME || !ADMIN_PASSWORD_HASH) {
+    return res.status(503).json({ error: "Warden login has not been configured by the administrator." });
+  }
+  const username = String(req.body.username || "").trim();
+  const password = String(req.body.password || "");
+  const usernameOk = username.toLowerCase() === ADMIN_USERNAME.toLowerCase();
+  const passwordOk = password.length > 0 && await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
+  if (!usernameOk || !passwordOk) return res.status(401).json({ error: "Warden username or password is incorrect." });
+  return res.json({ token: makeAdminToken(), admin: { username: ADMIN_USERNAME } });
+});
+
+app.get("/api/admin/overview", requireAdmin, async (_req, res, next) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        (SELECT COUNT(*)::int FROM laundry_users) AS students,
+        (SELECT COUNT(*)::int FROM laundry_receipts) AS receipts,
+        (SELECT COUNT(*)::int FROM laundry_receipts WHERE created_at >= NOW() - INTERVAL '7 days') AS last_seven_days
+    `);
+    return res.json({ overview: result.rows[0] });
+  } catch (error) { return next(error); }
+});
+
+app.get("/api/admin/receipts", requireAdmin, async (req, res, next) => {
+  try {
+    const search = String(req.query.search || "").trim().slice(0, 100);
+    const date = String(req.query.date || "").trim();
+    if (date && !/^\\d{4}-\\d{2}-\\d{2}$/.test(date)) return res.status(400).json({ error: "Date must use YYYY-MM-DD." });
+    const limit = Math.min(100, Math.max(1, Number.parseInt(req.query.limit, 10) || 50));
+    const offset = Math.max(0, Number.parseInt(req.query.offset, 10) || 0);
+    const pattern = "%" + search.replace(/[\\%_]/g, "\\\\app.get("/api/health", (_req, res) => res.json({ ok: true, service: "laundari-api" }));") + "%";
+    const values = [pattern, date || null, limit, offset];
+    const where = "($1 = '%%' OR u.name ILIKE $1 OR u.room_number ILIKE $1 OR r.receipt_number ILIKE $1) AND ($2::date IS NULL OR r.created_at::date = $2::date)";
+    const [rows, count] = await Promise.all([
+      pool.query(`SELECT r.id, r.receipt_number, r.items, r.total_items, r.created_at, u.name AS student_name, u.room_number
+        FROM laundry_receipts r JOIN laundry_users u ON u.id = r.user_id
+        WHERE ${where} ORDER BY r.created_at DESC LIMIT $3 OFFSET $4`, values),
+      pool.query(`SELECT COUNT(*)::int AS total FROM laundry_receipts r JOIN laundry_users u ON u.id = r.user_id WHERE ${where}`, values.slice(0, 2))
+    ]);
+    return res.json({ receipts: rows.rows, total: count.rows[0].total, limit, offset });
+  } catch (error) { return next(error); }
+});
+
+app.get("/api/admin/receipts/:id", requireAdmin, async (req, res, next) => {
+  try {
+    if (!/^\\d+$/.test(req.params.id)) return res.status(400).json({ error: "Invalid receipt." });
+    const result = await pool.query(`
+      SELECT r.id, r.receipt_number, r.items, r.total_items, r.photos, r.created_at,
+             u.name AS student_name, u.room_number
+      FROM laundry_receipts r JOIN laundry_users u ON u.id = r.user_id
+      WHERE r.id = $1
+    `, [req.params.id]);
+    if (!result.rowCount) return res.status(404).json({ error: "Receipt not found." });
+    return res.json({ receipt: result.rows[0] });
+  } catch (error) { return next(error); }
+});
 
 app.post("/api/auth/register", authLimiter, async (req, res, next) => {
   try {
