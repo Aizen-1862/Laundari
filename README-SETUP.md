@@ -33,3 +33,19 @@ Use a persistent PostgreSQL provider such as Neon for the database. Render's Fre
 - The frontend stores the session token in browser local storage. Users should log out on shared devices.
 - The API limits authentication and password-reset attempts and only returns receipts belonging to the signed-in user.
 - Back up important database data regularly. Free-tier limits and availability can change.
+
+
+## Warden admin portal
+
+The separate warden dashboard is available at `/admin.html` on the deployed website. It uses a dedicated admin username and password; student accounts cannot access admin endpoints.
+
+In the Render API service's **Environment** settings, add:
+
+- `ADMIN_USERNAME`: a private username for the warden (at least 3 characters)
+- `ADMIN_PASSWORD`: a unique password of at least 12 characters
+
+Keep both values private and do not put them in GitHub, frontend files, QR posters, or student messages. Save the environment changes and let Render redeploy the API. The server hashes the configured password for login verification and issues a separate, shorter-lived admin session.
+
+The admin portal shows student names, room numbers, submission dates, quantities, receipt numbers, and receipt photos. Only requests carrying a valid admin-role token can access the admin overview and all-student receipt endpoints. The student API rejects admin tokens.
+
+Students should be told that the warden can view their laundry submission history and any photos they attach. Share the student website QR code publicly; give the private `/admin.html` link and credentials only to the warden.
