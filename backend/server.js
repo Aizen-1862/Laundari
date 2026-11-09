@@ -127,7 +127,7 @@ app.get("/api/health", (_req, res) => res.json({ ok: true, service: "laundari-ap
 
 // Warden-only authentication and records. Credentials are kept in Render environment variables.
 app.post("/api/admin/login", adminLimiter, async (req, res) => {
-  if (!ADMIN_USERNAME || !ADMIN_PASSWORD_HASH) {
+  if (ADMIN_USERNAME.length < 3 || Buffer.byteLength(ADMIN_PASSWORD, "utf8") < 12 || Buffer.byteLength(ADMIN_PASSWORD, "utf8") > 72 || !ADMIN_PASSWORD_HASH) {
     return res.status(503).json({ error: "Warden login has not been configured by the administrator." });
   }
   const username = String(req.body.username || "").trim();
