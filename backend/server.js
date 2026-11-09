@@ -81,7 +81,10 @@ function validIdentity(name, room) {
   return name.length >= 2 && name.length <= 60 && room.length >= 1 && room.length <= 20;
 }
 function makeToken(user) {
-  return jwt.sign({ sub: String(user.id), name: user.name, room: user.room_number }, JWT_SECRET, { expiresIn: "7d", issuer: "laundari-api", audience: "laundari-web" });
+  return jwt.sign({ sub: String(user.id), name: user.name, room: user.room_number, role: "student" }, JWT_SECRET, { expiresIn: "7d", issuer: "laundari-api", audience: "laundari-web" });
+}
+function makeAdminToken() {
+  return jwt.sign({ sub: "warden", username: ADMIN_USERNAME, role: "admin" }, JWT_SECRET, { expiresIn: "8h", issuer: "laundari-api", audience: "laundari-web" });
 }
 function requireAuth(req, res, next) {
   const header = req.get("authorization") || "";
@@ -89,12 +92,26 @@ function requireAuth(req, res, next) {
   if (!token) return res.status(401).json({ error: "Please log in again." });
   try {
     req.user = jwt.verify(token, JWT_SECRET, { issuer: "laundari-api", audience: "laundari-web" });
+    if (req.user.role !== "student") return res.status(403).json({ error: "Student access only." });
     return next();
   } catch {
     return res.status(401).json({ error: "Your session expired. Please log in again." });
   }
 }
-function requireAdmin(req, res, next) {\n  const header = req.get("authorization") || "";\n  const token = header.startsWith("Bearer ") ? header.slice(7) : "";\n  if (!token) return res.status(401).json({ error: "Please sign in as the warden." });\n  try {\n    const payload = jwt.verify(token, JWT_SECRET, { issuer: "laundari-api", audience: "laundari-web" });\n    if (payload.role !== "admin" || payload.sub !== "warden") return res.status(403).json({ error: "Warden access only." });\n    req.admin = payload;\n    return next();\n  } catch { return res.status(401).json({ error: "Your admin session expired. Please sign in again." }); }\n}\nfunction safePhraseMatch(candidate) {
+function requireAdmin(req, res, next) {
+  const header = req.get("authorization") || "";
+  const token = header.startsWith("Bearer ") ? header.slice(7) : "";
+  if (!token) return res.status(401).json({ error: "Please sign in as the warden." });
+  try {
+    const payload = jwt.verify(token, JWT_SECRET, { issuer: "laundari-api", audience: "laundari-web" });
+    if (payload.role !== "admin" || payload.sub !== "warden") return res.status(403).json({ error: "Warden access only." });
+    req.admin = payload;
+    return next();
+  } catch {
+    return res.status(401).json({ error: "Your admin session expired. Please sign in again." });
+  }
+}
+function safePhraseMatch(candidate) {
   const a = Buffer.from(String(candidate || ""), "utf8");
   const b = Buffer.from(RESET_PHRASE, "utf8");
   return a.length === b.length && crypto.timingSafeEqual(a, b);
@@ -105,9 +122,10 @@ function receiptNumber() {
   return "LD-" + date + "-" + crypto.randomInt(100000, 999999);
 }
 
+
 app.get("/api/health", (_req, res) => res.json({ ok: true, service: "laundari-api" }));
 
-// Warden-only authentication and records. Credentials stay in Render environment variables.
+// Warden-only authentication and records. Credentials are kept in Render environment variables.
 app.post("/api/admin/login", adminLimiter, async (req, res) => {
   if (!ADMIN_USERNAME || !ADMIN_PASSWORD_HASH) {
     return res.status(503).json({ error: "Warden login has not been configured by the administrator." });
@@ -139,7 +157,7 @@ app.get("/api/admin/receipts", requireAdmin, async (req, res, next) => {
     if (date && !/^\\d{4}-\\d{2}-\\d{2}$/.test(date)) return res.status(400).json({ error: "Date must use YYYY-MM-DD." });
     const limit = Math.min(100, Math.max(1, Number.parseInt(req.query.limit, 10) || 50));
     const offset = Math.max(0, Number.parseInt(req.query.offset, 10) || 0);
-    const pattern = "%" + search.replace(/[\\%_]/g, "\\\\app.get("/api/health", (_req, res) => res.json({ ok: true, service: "laundari-api" }));") + "%";
+    const pattern = "%" + search + "%";
     const values = [pattern, date || null, limit, offset];
     const where = "($1 = '%%' OR u.name ILIKE $1 OR u.room_number ILIKE $1 OR r.receipt_number ILIKE $1) AND ($2::date IS NULL OR r.created_at::date = $2::date)";
     const [rows, count] = await Promise.all([
@@ -165,6 +183,7 @@ app.get("/api/admin/receipts/:id", requireAdmin, async (req, res, next) => {
     return res.json({ receipt: result.rows[0] });
   } catch (error) { return next(error); }
 });
+
 
 app.post("/api/auth/register", authLimiter, async (req, res, next) => {
   try {
