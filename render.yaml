@@ -22,4 +22,4 @@ services:
       - key: ADMIN_PASSWORD
         sync: false
       - key: CORS_ORIGIN
-        value: https://aizen-1862.github.io
+        value: https://aizen-1862.github.io,https://laundari-preview.onrender.com
