@@ -92,7 +92,7 @@ function requireAuth(req, res, next) {
   if (!token) return res.status(401).json({ error: "Please log in again." });
   try {
     req.user = jwt.verify(token, JWT_SECRET, { issuer: "laundari-api", audience: "laundari-web" });
-    if (req.user.role !== "student") return res.status(403).json({ error: "Student access only." });
+    if (req.user.role && req.user.role !== "student") return res.status(403).json({ error: "Student access only." });
     return next();
   } catch {
     return res.status(401).json({ error: "Your session expired. Please log in again." });
