@@ -17,5 +17,9 @@ services:
         generateValue: true
       - key: RESET_PHRASE
         sync: false
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
       - key: CORS_ORIGIN
         value: https://aizen-1862.github.io
