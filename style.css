@@ -1211,7 +1211,8 @@ body {
 .user-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; flex-wrap: wrap; }
 #welcomeName { max-width: 100px; overflow: hidden; text-overflow: ellipsis; color: var(--muted); font-size: 10px; font-weight: 800; }
 .small-action { border: 1px solid var(--orange-border); border-radius: 999px; padding: 8px 10px; background: #fff; color: var(--orange); font-size: 10px; font-weight: 850; cursor: pointer; }
-.file-input { position: fixed; width: 1px; height: 1px; opacity: 0; left: -10000px; }
+.photo-button { position: relative; display: flex; align-items: center; justify-content: center; }
+.file-input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; }
 .history-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 8px 2px 14px; }
 .history-heading h2 { font-size: 20px; }
 .history-list { display: grid; gap: 10px; }
