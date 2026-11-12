@@ -132,15 +132,21 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) { alert(error.message || "Could not process this photo. Please try again."); }
   }
 
-  // Keep the camera input mounted and save the in-progress form before Android switches apps.
-  $("cameraBtn").addEventListener("click", () => {
+  // Let the real file inputs receive the tap directly. Programmatic .click() on
+  // off-screen inputs is unreliable on some Android browsers and can close the page.
+  $("cameraInput").addEventListener("click", event => {
     saveDraft();
-    $("cameraInput").value = "";
-    $("cameraInput").click();
+    event.currentTarget.value = "";
   });
-  $("galleryBtn").addEventListener("click", () => { $("galleryInput").value = ""; $("galleryInput").click(); });
+  $("galleryInput").addEventListener("click", event => {
+    event.currentTarget.value = "";
+  });
   $("cameraInput").addEventListener("change", event => handleFiles(event.target.files));
   $("galleryInput").addEventListener("change", event => handleFiles(event.target.files));
+  window.addEventListener("pagehide", saveDraft);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") saveDraft();
+  });
 
   function setAuthMode(mode) {
     authMode = mode;
