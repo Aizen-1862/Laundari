@@ -60,11 +60,9 @@
         <div class="photo-header"><div><small>OPTIONAL</small><h2>📸 Clothes Photos</h2></div><div id="photoCount" class="photo-count">0 photos</div></div>
         <p class="photo-description">Add photos of the clothes you're giving to laundry. They'll appear on your receipt too.</p>
         <div class="photo-buttons">
-          <button id="cameraBtn" class="photo-button" type="button">📷 <span>Take Photo</span></button>
-          <button id="galleryBtn" class="photo-button" type="button">🖼️ <span>Gallery</span></button>
+          <label id="cameraBtn" class="photo-button">📷 <span>Take Photo</span><input id="cameraInput" class="file-input" type="file" accept="image/*" capture="environment" aria-label="Take a photo"></label>
+          <label id="galleryBtn" class="photo-button">🖼️ <span>Gallery</span><input id="galleryInput" class="file-input" type="file" accept="image/*" multiple aria-label="Choose photos"></label>
         </div>
-        <input id="cameraInput" class="file-input" type="file" accept="image/*" capture="environment" aria-label="Take a photo">
-        <input id="galleryInput" class="file-input" type="file" accept="image/*" multiple aria-label="Choose photos">
         <div id="photoPreview" class="photo-preview"></div>
       </section>
       <button id="submitBtn" class="primary-button" type="button"><span>Submit Laundry</span><b>→</b></button>
